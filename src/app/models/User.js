@@ -1,7 +1,7 @@
 import Sequelize, { Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
 
-class User extends Model() {
+class User extends Model {
   static init(sequelize) {
     super.init(
       {
@@ -13,11 +13,18 @@ class User extends Model() {
       { sequelize }
     );
 
+    //crypt the password
     this.addHook('beforeSave', async user => {
-      user.password_hash = await bcrypt.hash(user.password, 8);
+      if (user.password) {
+        user.password_hash = await bcrypt.hash(user.password, 8);
+      }
     });
 
     return this;
+  }
+
+  async verifyPassword(password) {
+    return await bcrypt.compare(password, this.password_hash);
   }
 }
 

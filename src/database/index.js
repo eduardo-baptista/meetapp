@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import databaseConfig from './../config/database';
 
-//modules
+//models
 import User from '../app/models/User';
 
 const models = [User];
@@ -12,7 +12,7 @@ class DataBase {
   }
   init() {
     this.connection = new Sequelize(databaseConfig);
-    models.forEach(model => model.init(Sequelize));
+    models.forEach(model => model.init(this.connection));
   }
 }
 
