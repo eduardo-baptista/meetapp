@@ -7,19 +7,38 @@ class sessionController {
   async store(req, res) {
     //data validation
     const schema = Yup.object().shape({
-      name: Yup.string().required(),
+      email: Yup.string().required(),
       password: Yup.string()
         .min(6)
         .required(),
     });
     if (!(await schema.isValid(req.body))) {
-      res.status(400).json({ error: 'request does not valid' });
+      return res.status(400).json({ error: 'request does not valid' });
     }
 
     //verify login
     const { email, password } = req.body;
 
-    const user = User.findOne();
+    const user = await User.findOne({ where: { email } });
+    if (!user) return res.status(401).json({ error: 'User did not found' });
+
+    //verify password
+    if (!(await user.checkPassword(password)))
+      return res.status(401).json({ error: 'password does not match' });
+
+    //create jwt
+    const { id, name } = user;
+
+    return res.json({
+      user: {
+        id,
+        name,
+        email,
+      },
+      token: jwt.sign({ id }, authConfig.secret, {
+        expiresIn: authConfig.expiresIn,
+      }),
+    });
   }
 }
 

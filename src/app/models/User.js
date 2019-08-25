@@ -23,7 +23,7 @@ class User extends Model {
     return this;
   }
 
-  async verifyPassword(password) {
+  async checkPassword(password) {
     return await bcrypt.compare(password, this.password_hash);
   }
 }

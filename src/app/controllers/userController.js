@@ -35,23 +35,36 @@ class userController {
       oldPassword: Yup.string().min(6),
       password: Yup.string()
         .min(6)
-        .when('oldPassword', (oldPassword, field) => {
-          oldPassword ? field.required() : field;
-        }),
-      confirmPassword: Yup.string().when('password', (password, field) => {
-        password ? field.required().oneOf([Yup.ref('password')]) : field;
-      }),
+        .when('oldPassword', (oldPassword, field) =>
+          oldPassword ? field.required() : field
+        ),
+      confirmPassword: Yup.string().when('password', (password, field) =>
+        password ? field.required().oneOf([Yup.ref('password')]) : field
+      ),
     });
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'request does not valid' });
     }
 
+    const user = await User.findByPk(req.userId);
+    const { email: newEmail, oldPassword } = req.body;
+
     //verify email exist
-    // const user
+    if (newEmail && newEmail !== user.email) {
+      const emailExist = await User.findOne({ where: { email: newEmail } });
+      if (emailExist)
+        return res.status(400).json({ error: 'email arlready exists.' });
+    }
 
     //verify oldPassword is correct
+    if (oldPassword && !(await user.checkPassword(oldPassword))) {
+      return res.status(401).json({ error: 'password does not match' });
+    }
 
     //update user
+    const { id, email, name } = await user.update(req.body);
+
+    return res.json({ id, email, name });
   }
 }
 
