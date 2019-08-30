@@ -1,0 +1,13 @@
+NODE_ENV=development
+SERVER_URL=http://localhost:3333
+
+# database
+
+DB_HOST=localhost
+DB_USER=postgres
+DB_PASS=meetappdb123
+DB_BASE=meetapp
+
+# auth
+
+AUTH_SECRED=27aa09eadfb3f117d1c05b1bf101bdd9
