@@ -19,9 +19,12 @@ class meetupController {
 
     const meetups = await Meetup.findAll({
       where,
+      offset: page * 10 - 10,
+      limit: page * 10,
+      include: [{ model: File, as: 'banner' }],
     });
 
-    res.json({ date, page });
+    res.json(meetups);
   }
 
   async store(req, res) {

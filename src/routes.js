@@ -44,5 +44,7 @@ routes.get('/organizing', organizingController.index);
 
 //create subscription
 routes.post('/subscriptions', subscriptionController.store);
+//list all subscriptions
+routes.get('/subscriptions', subscriptionController.index);
 
 export default routes;

@@ -6,6 +6,27 @@ import Queue from '../../libs/Queue';
 import User from '../models/User';
 
 class subscriptionController {
+  async index(req, res) {
+    const subscriptionsMeetups = await Subscription.findAll({
+      where: {
+        user_id: req.userId,
+      },
+      include: [
+        {
+          model: Meetup,
+          as: 'meetup',
+          where: {
+            date: {
+              [Op.gt]: new Date(),
+            },
+          },
+        },
+      ],
+      order: [[{ model: Meetup, as: 'meetup' }, 'date']],
+    });
+
+    return res.json(subscriptionsMeetups);
+  }
   async store(req, res) {
     // input validation
     const schema = Yup.object().shape({
